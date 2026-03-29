@@ -1,0 +1,16 @@
+{
+	"name": "@monorepo/agent",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"start": "vite"
+	},
+	"dependencies": {
+		"@anthropic-ai/claude-agent-sdk": "catalog:"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"typescript": "catalog:"
+	}
+}

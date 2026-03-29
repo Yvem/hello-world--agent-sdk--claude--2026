@@ -1,8 +1,33 @@
 import { query } from "@anthropic-ai/claude-agent-sdk";
 
+let sessionId: string | undefined;
+
 for await (const message of query({
-	prompt: "What files are in this directory?",
-	options: { allowedTools: ["Bash", "Glob"] }
+	prompt: "Find and fix the bug causing test failures in the auth module",
+	options: {
+		allowedTools: ["Read", "Edit", "Bash", "Glob", "Grep"], // Listing tools here auto-approves them (no prompting)
+		settingSources: ["project"], // Load CLAUDE.md, skills, hooks from current directory
+		maxTurns: 30, // Prevent runaway sessions
+		effort: "high" // Thorough reasoning for complex debugging
+	}
 })) {
-	if ("result" in message) console.log(message.result);
+	// Save the session ID to resume later if needed
+	if (message.type === "system" && message.subtype === "init") {
+		sessionId = message.session_id;
+	}
+
+	// Handle the final result
+	if (message.type === "result") {
+		if (message.subtype === "success") {
+			console.log(`Done: ${message.result}`);
+		} else if (message.subtype === "error_max_turns") {
+			// Agent ran out of turns. Resume with a higher limit.
+			console.log(`Hit turn limit. Resume session ${sessionId} to continue.`);
+		} else if (message.subtype === "error_max_budget_usd") {
+			console.log("Hit budget limit.");
+		} else {
+			console.log(`Stopped: ${message.subtype}`);
+		}
+		console.log(`Cost: $${message.total_cost_usd.toFixed(4)}`);
+	}
 }

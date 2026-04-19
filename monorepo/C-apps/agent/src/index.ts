@@ -2,6 +2,8 @@ import { query } from "@anthropic-ai/claude-agent-sdk";
 
 let sessionId: string | undefined;
 
+console.log('starting loop...')
+
 for await (const message of query({
 	prompt: "Find and fix the bug causing test failures in the auth module",
 	options: {
@@ -11,6 +13,8 @@ for await (const message of query({
 		effort: "high" // Thorough reasoning for complex debugging
 	}
 })) {
+	console.log('----------\ngot message...', message)
+
 	// Save the session ID to resume later if needed
 	if (message.type === "system" && message.subtype === "init") {
 		sessionId = message.session_id;

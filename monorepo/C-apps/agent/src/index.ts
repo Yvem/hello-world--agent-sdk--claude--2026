@@ -1,6 +1,12 @@
 import { query } from "@anthropic-ai/claude-agent-sdk";
 
+if (!process.env.ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY environment variable required");
+
+/////////////////////////////////////////////////
+
 let sessionId: string | undefined;
+
+/////////////////////////////////////////////////
 
 console.log('starting loop...')
 
